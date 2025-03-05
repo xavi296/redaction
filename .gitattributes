@@ -1,0 +1,36 @@
+# 自动检测文本文件并执行LF标准化
+* text=auto
+
+# Java 源文件
+*.java text diff=java
+*.kt text diff=kotlin
+*.kts text diff=kotlin
+
+# 配置文件
+*.xml text
+*.properties text
+*.yml text
+*.yaml text
+*.json text
+*.conf text
+*.cfg text
+*.ini text
+
+# 文档
+*.md text diff=markdown
+*.txt text
+*.html text diff=html
+
+# 脚本
+*.sh text eol=lf
+*.bat text eol=crlf
+gradlew text eol=lf
+gradlew.bat text eol=crlf
+
+# 二进制文件
+*.jar binary
+*.zip binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary 

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<idea-plugin>
+    <id>com.redaction.sensitive-data-masker</id>
+    <name>Sensitive Data Masker</name>
+    <vendor email="your.email@example.com" url="https://github.com/yourusername/redaction">Redaction</vendor>
+
+    <description><![CDATA[
+    <h2>敏感信息自动脱敏插件</h2>
+    
+    <p>一个强大的 IntelliJ IDEA 插件，用于自动检测和脱敏项目中的敏感信息。</p>
+    
+    <h3>主要功能：</h3>
+    <ul>
+        <li><b>自动检测敏感信息：</b>
+            <ul>
+                <li>IP地址</li>
+                <li>数据库连接信息</li>
+                <li>密码和密钥</li>
+                <li>API密钥</li>
+                <li>认证信息</li>
+            </ul>
+        </li>
+        <li><b>支持多种中间件配置脱敏：</b>
+            <ul>
+                <li>MongoDB</li>
+                <li>Redis</li>
+                <li>RabbitMQ</li>
+                <li>Kafka</li>
+                <li>ElasticSearch</li>
+                <li>RocketMQ</li>
+            </ul>
+        </li>
+        <li><b>智能识别：</b>
+            <ul>
+                <li>自动排除配置占位符（如 ${...} 和 @...@）</li>
+                <li>排除常见开源网站地址</li>
+                <li>排除代码引用和包声明</li>
+            </ul>
+        </li>
+        <li><b>批量处理：</b>
+            <ul>
+                <li>支持一键处理整个项目</li>
+                <li>支持单文件处理</li>
+                <li>智能识别配置文件</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>使用方法：</h3>
+    <ul>
+        <li><b>处理单个文件：</b>
+            <ul>
+                <li>在编辑器中右键点击，选择 "Mask Sensitive Data"</li>
+                <li>或使用快捷键 Ctrl+Alt+M（Windows/Linux）/ Cmd+Alt+M（macOS）</li>
+            </ul>
+        </li>
+        <li><b>处理整个项目：</b>
+            <ul>
+                <li>在项目视图中右键点击项目，选择 "Mask All Project Configuration Files"</li>
+                <li>或使用快捷键 Ctrl+Alt+Shift+M（Windows/Linux）/ Cmd+Alt+Shift+M（macOS）</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>支持的文件类型：</h3>
+    <ul>
+        <li>.properties</li>
+        <li>.yml / .yaml</li>
+        <li>.xml</li>
+        <li>.json</li>
+        <li>.conf</li>
+        <li>.cfg</li>
+        <li>.env</li>
+        <li>.ini</li>
+    </ul>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceImplementation="com.redaction.service.SensitiveDataService"/>
+        <projectConfigurable instance="com.redaction.settings.RedactionSettingsConfigurable"
+                           displayName="Sensitive Data Masking Settings"/>
+    </extensions>
+
+    <actions>
+        <action id="Redaction.MaskSensitiveData" 
+                class="com.redaction.action.MaskSensitiveDataAction" 
+                text="Mask Sensitive Data" 
+                description="Mask sensitive data in current file">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt M"/>
+        </action>
+        
+        <action id="Redaction.MaskAllProjectFiles"
+                class="com.redaction.action.MaskAllProjectFilesAction"
+                text="Mask All Project Configuration Files"
+                description="Mask sensitive data in all project configuration files">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+            <add-to-group group-id="MainMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt shift M"/>
+        </action>
+    </actions>
+</idea-plugin>
