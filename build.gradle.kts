@@ -4,31 +4,36 @@ plugins {
 }
 
 group = "com.redaction"
-version = "1.0.0"
+version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://packages.jetbrains.team/maven/p/ij/intellij-dependencies") }
 }
 
 // Configure Gradle IntelliJ Plugin
 intellij {
-    version.set("2023.3.3")
+    version.set("2023.1.4")
     type.set("IC") // IntelliJ IDEA Community Edition
     plugins.set(listOf("com.intellij.java"))
-    updateSinceUntilBuild.set(true)
 }
 
 dependencies {
+    // JUnit 4
+    testImplementation("junit:junit:4.13.2")
+    
+    // Mockito
+    testImplementation("org.mockito:mockito-core:3.12.4")
+    
+    // Gson
     implementation("com.google.code.gson:gson:2.10.1")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
 }
 
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
-        sourceCompatibility = "17"
-        targetCompatibility = "17"
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
     }
 
     patchPluginXml {
@@ -61,5 +66,9 @@ tasks {
 
     buildSearchableOptions {
         enabled = false
+    }
+
+    test {
+        useJUnit()
     }
 } 

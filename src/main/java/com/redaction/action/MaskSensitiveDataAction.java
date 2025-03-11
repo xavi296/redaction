@@ -3,11 +3,9 @@ package com.redaction.action;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.command.WriteCommandAction;
-import com.intellij.openapi.editor.Document;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.components.ServiceManager;
 import com.redaction.service.SensitiveDataService;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,27 +35,18 @@ public class MaskSensitiveDataAction extends AnAction {
         Project project = e.getProject();
         if (project == null) return;
 
-        Editor editor = e.getData(CommonDataKeys.EDITOR);
-        VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
-        
-        if (editor == null || file == null) return;
+        VirtualFile[] files = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
+        if (files == null || files.length == 0) return;
 
         SensitiveDataService service = project.getService(SensitiveDataService.class);
         
-        // 检查文件是否需要脱敏处理
-        if (!service.isSensitiveFile(file)) {
-            return;
+        for (VirtualFile file : files) {
+            if (file.isDirectory()) {
+                service.maskDirectoryFiles(file);
+            } else {
+                service.processFile(file);
+            }
         }
-
-        Document document = editor.getDocument();
-        String content = document.getText();
-        // 调用服务进行脱敏处理
-        String maskedContent = service.maskSensitiveData(content);
-
-        // 在写操作命令中更新文档内容
-        WriteCommandAction.runWriteCommandAction(project, () -> 
-            document.setText(maskedContent)
-        );
     }
 
     /**
@@ -70,14 +59,10 @@ public class MaskSensitiveDataAction extends AnAction {
     @Override
     public void update(@NotNull AnActionEvent e) {
         Project project = e.getProject();
-        VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
+        VirtualFile[] files = e.getData(CommonDataKeys.VIRTUAL_FILE_ARRAY);
         
-        if (project == null || file == null) {
-            e.getPresentation().setEnabledAndVisible(false);
-            return;
-        }
-
-        SensitiveDataService service = project.getService(SensitiveDataService.class);
-        e.getPresentation().setEnabledAndVisible(service.isSensitiveFile(file));
+        e.getPresentation().setEnabledAndVisible(
+            project != null && files != null && files.length > 0
+        );
     }
 } 
